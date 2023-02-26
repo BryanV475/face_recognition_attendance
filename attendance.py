@@ -94,31 +94,18 @@ def write_attendance(name):
     with open('attendance.csv','r+') as file:
         #Read the information in the file
         data = file.readline()
+       
+        #Get the date and time
+        date_info = datetime.now()
 
-        #Create the names list
-        names_in_file = []
+        #Extract the Date<AAAA,MM,DD>
+        date = date_info.strftime('%Y:%m:%d')
 
-        #Iterate in each line of the file
-        for line in data:
-            #Search for input and split it with < , > -> input= [ User<Name>, Date<AAAA,MM,DD>, Hour<HH.MM.ss> ]
-            input = line.split(',')
+        #Extract the hour
+        hour = date_info.strftime('%H:%M:%S')
 
-            #Save the names
-            names_in_file.append(input[0])
-        
-        #Check if we don't have the name in the file to create a new record
-        if name not in names_in_file:
-            #Get the date and time
-            date_info = datetime.now()
-
-            #Extract the Date<AAAA,MM,DD>
-            date = date_info.strftime('%Y:%m:%d')
-
-            #Extract the hour
-            hour = date_info.strftime('%H:%M:%S')
-
-            #Save the new record [ User<Name>, Date<AAAA,MM,DD>, Hour<HH.MM.ss> ]
-            file.writelines(f'\n{name},{date},{hour}')
+        #Save the new record [ User<Name>, Date<AAAA,MM,DD>, Hour<HH.MM.ss> ]
+        file.writelines(f'\n{name},{date},{hour}')
 
 def get_attendance(images, names):
     #Codificate our faces
@@ -257,4 +244,7 @@ if __name__ == "__main__":
 
         if option == 2:
             images, names = get_images('images')
-            get_attendance(images,names)
+            if len(images) != 0:
+                get_attendance(images,names)
+            else:
+                print("No existen estudiantes registrados!!")
