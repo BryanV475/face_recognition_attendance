@@ -132,7 +132,10 @@ class MainWindow(QWidget):
                     #Check if the minimum value is in our comparison array
                     if comparison[minimum]:
                         #We get the name of the user
-                        name = names[minimum].upper()
+                        if similarity[minimum] < 0.5:
+                            name = names[minimum].upper()
+                        else:
+                            name = "Desconocido"
 
                         #Extract the coordinates of the face
                         yi, xf, yf, xi = faceloc
@@ -168,17 +171,19 @@ class MainWindow(QWidget):
                                 encountered.append(name)
                                 #Save the record
                                 #Open the .csv in read-write mode
-                                with open('attendance.csv','r+') as file:
-                                    #Read the information in the file
-                                    data = file.readline()
-                                    #Get the date and time
-                                    date_info = datetime.now()
-                                    #Extract the Date<AAAA,MM,DD>
-                                    date = date_info.strftime('%Y:%m:%d')
-                                    #Extract the hour
-                                    hour = date_info.strftime('%H:%M:%S')
-                                    #Save the new record [ User<Name>, Date<AAAA,MM,DD>, Hour<HH.MM.ss> ]
-                                    file.writelines(f'\n{name},{date},{hour}')
+                                if name != "Desconocido":
+                                    with open('attendance.csv','r+') as file:
+                                        #Read the information in the file
+                                        data = file.readline()
+                                        #Get the date and time
+                                        date_info = datetime.now()
+                                        #Extract the Date<AAAA,MM,DD>
+                                        date = date_info.strftime('%Y:%m:%d')
+                                        #Extract the hour
+                                        hour = date_info.strftime('%H:%M:%S')
+                                        #Save the new record [ User<Name>, Date<AAAA,MM,DD>, Hour<HH.MM.ss> ]
+                                        file.writelines(f'\n{name},{date},{hour}')
+                            
                     else:
                         # If the face is unknown, draw a red rectangle and display "Desconocido"
                         yi, xf, yf, xi = faceloc
