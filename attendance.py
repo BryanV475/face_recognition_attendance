@@ -1,12 +1,13 @@
 import cv2
-from PyQt5.QtCore import Qt, QFile, QTextStream
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QInputDialog, QPushButton, QHBoxLayout, QVBoxLayout, QDialog, QMainWindow, QTableWidget, QTableWidgetItem
 import os
 import numpy as np
 import face_recognition as fr
 import random
 from datetime import datetime
+from PyQt5.QtCore import Qt, QFile, QTextStream
+from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QInputDialog, QPushButton, QHBoxLayout, QVBoxLayout, QDialog, QMainWindow, QTableWidget, QTableWidgetItem
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -32,7 +33,7 @@ class MainWindow(QWidget):
         self.register_button = QPushButton("Registrar nuevo estudiante")
         self.register_button.clicked.connect(self.register_student)
 
-        self.attendance_button = QPushButton("Register Asistencia")
+        self.attendance_button = QPushButton("Registrar Asistencia")
         self.attendance_button.clicked.connect(self.register_attendance)
 
         self.close_button = QPushButton("Salir")
@@ -96,34 +97,27 @@ class MainWindow(QWidget):
         names = [os.path.splitext(image)[0] for image in os.listdir(path)]
         
         if len(images) != 0:
-            # -- Codificate our faces -- #
+            # Codificate our faces
             codificated_faces = [fr.face_encodings(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))[0] for image in images]
-
-            #---------------------------------------------------------#
-            
-            #Create the list for users encountered
+            # Create the list for users encountered
             encountered = []
-            #Set a control variable for the faces comparison
+            # Set a control variable for the faces comparison
             comp1 = 100
-            #Create the camera object using opencv - (0) -> First Camera
+            # Create the camera object using opencv - (0) -> First Camera
             cap = cv2.VideoCapture(0)
             while True:
-                #Read the frames
+                # Read the frames
                 ret, frame = cap.read()
-                #Reduce the images to improve efficiency
+                # Reduce the images to improve efficiency
                 frame2 = cv2.resize(frame, (0,0), None, 0.25, 0.25)
-                #Convert BGR -> RGB color
+                # Convert BGR -> RGB color
                 rgb = cv2.cvtColor(frame2, cv2.COLOR_BGR2RGB)
-                #Search for faces in the camera's vision field
+                # Search for faces in the camera's vision field
                 faces = fr.face_locations(rgb)
-                #Codificate the faces located
+                # Codificate the faces located
                 facescod = fr.face_encodings(rgb, faces)
 
-                if len(facescod) == 0:
-                    continue
-
-
-                #Iterate in the faces encountered and each one's location facecod<codification>, faceloc<location>
+                # Iterate in the faces encountered and each one's location facecod<codification>, faceloc<location>
                 for facecod, faceloc in zip(facescod, faces):
                     #Comparison between registered faces and encountered faces in real time
                     comparison = fr.compare_faces(codificated_faces, facecod)
